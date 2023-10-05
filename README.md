@@ -1,118 +1,64 @@
-// This is a comment 
-// ERC721-free-and-paid-mint
-// An erc721 contract with a free and paid mint for each wallet 
-// SPDX-License-Identifier: MIT
-// contract license
+# R - NFT Minting Smart Contract
 
-pragma solidity ^0.8.2
-// solidity version
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+## Overview
 
+The `R` Solidity smart contract allows users to mint NFTs (Non-Fungible Tokens) with specific functionality and characteristics.
 
-contract R is ERC721Enumerable, Ownable {
-using String for uint256;
+- **Token Standard**: ERC-721
+- **Inherits**: ERC721Enumerable, Ownable
+- **Symbol**: [R]
+- **Total Supply**: 3333
+- **Max Mint Amount**: 5
+- **Minting Cost**: 0.002 ETH per token
 
-// state variable
-string baseURI;
-string public baseExtension = ".json";
-uint256 public cost = 0.002 ether;
-uint256 public maxSupply = 3333;
-uint256 public maxMintAmount = 5;
-bool public pasued = true;
-bool public revealed = true;
+## Contract Details
 
-constructor(
-string memory name,
-string memory _symbol,
-string memory _initBaseURI
-) ERC721(name, _symbol) {
-baseURI(initBaseURI)
-}
+### State Variables
 
-=================================
-// internal
-=================================
-function _baseURI() internal view virtual override returns (string memory) {
-return baseURI;
-}
+- `baseURI`: Base URI for token metadata.
+- `baseExtension`: File extension for token metadata.
+- `cost`: Cost to mint a token.
+- `maxSupply`: Maximum total supply of tokens.
+- `maxMintAmount`: Maximum number of tokens that can be minted at once per wallet.
+- `paused`: Flag to pause/unpause minting.
+- `revealed`: Flag indicating if tokens are revealed.
 
-===============================
-// public 
-===============================
-function mint(uint256 _mintAmount) public payable {
-uint256 supply = totalSupply();
-require(!paused);
-require(_mintamount > 0);
-require(_mintAmount <= maxMintAmount);
-require(supply + _mintamount <= maxSupply);
+### Constructor
 
-if (msg.sender !=owner()) {
-require(msg.value== 1) {
-_safeMint(msg.sender, supply + 1);
-} else {
-for (uint256 i = 2; i <= _mintAmount; i++) {
-_safeMint(msg.sender, supply + i);
-}
-}
+- `constructor`: Initializes the contract with a name, symbol, and base URI.
 
-  function walletOfOwner(address _owner)
-    public
-    view
-    returns (uint256[] memory)
-  {
-    uint256 ownerTokenCount = balanceOf(_owner);
-    uint256[] memory tokenIds = new uint256[](ownerTokenCount);
-    for (uint256 i; i < ownerTokenCount; i++) {
-      tokenIds[i] = tokenOfOwnerByIndex(_owner, i);
-    }
-    return tokenIds;
-  }
+### Internal Functions
 
-  function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-    require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-   string memory currentBaseURI = _baseURI();
-    return bytes(currentBaseURI).length > 0
-      ? string(abi.encodePacked(currentBaseURI, tokenId.toString(), baseExtension)): "";
-  }
+- `_baseURI()`: Internal function to get the base URI for token metadata.
 
-  //only owner
-  function reveal() public onlyOwner {
-      revealed = true;
-  }
-  
-  function setCost(uint256 _newCost) public onlyOwner {
-    cost = _newCost;
-  }
+### Public Functions
 
-  function setmaxMintAmount(uint256 _newmaxMintAmount) public onlyOwner {
-    maxMintAmount = _newmaxMintAmount;
-  }
+- `mint(uint256 _mintAmount)`: Mint NFTs, allowing users to mint a specified quantity of tokens.
+- `walletOfOwner(address _owner)`: Get an array of token IDs owned by a specific address.
+- `tokenURI(uint256 tokenId)`: Get the URI for a specific token.
+- `reveal()`: Reveals the tokens.
+- `setCost(uint256 _newCost)`: Set a new minting cost (Owner-only).
+- `setMaxMintAmount(uint256 _newMaxMintAmount)`: Set a new maximum mint amount (Owner-only).
+- `setBaseURI(string memory _newBaseURI)`: Set a new base URI for token metadata (Owner-only).
+- `setBaseExtension(string memory _newBaseExtension)`: Set a new file extension for token metadata (Owner-only).
+- `withdraw()`: Withdraw funds, paying 5% to another address and 95% to the contract owner (Owner-only).
 
-  function setBaseURI(string memory _newBaseURI) public onlyOwner {
-    baseURI = _newBaseURI;
-  }
+## Usage
 
-  function setBaseExtension(string memory _newBaseExtension) public onlyOwner {
-    baseExtension = _newBaseExtension;
-  }
- 
-  function withdraw() public payable onlyOwner {
-    // This will pay 5% of  initial sale to the added address.
-    =============================================================================
-  (bool hs, ) = payable(0x2fb8179c8ca593913A620894e9Be85199c27520E).call{value: address(this).balance * 5 / 100}("");
-  require(hs);
-    =============================================================================
-    
-    // This will payout the owner 95% of the contract balance.
-    // Do not remove this otherwise you will not be able to withdraw the funds.
-=============================================================================
-   
-  (bool os, ) = payable(owner()).call{value: address(this).balance}("");
-  require(os);
-    
-  =============================================================================
-  }
-}
+- Deploy this contract to the Ethereum network.
+- Call the `mint` function to mint NFTs.
+- Adjust contract parameters using owner-only functions as needed.
+- Reveal the tokens when ready using the `reveal` function.
+
+## Ownership
+
+The contract owner has the ability to manage contract parameters, pause minting, and withdraw funds.
+
+**Note**: This is a simplified overview of the contract. Detailed documentation and testing should be conducted before deployment.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
